@@ -3,14 +3,14 @@
 
 void VDW_StatusChimeTarget::init(){
     if(!_externalIO) pinMode(_chimePin, OUTPUT);
-    if(_activeLow) _writePin(_chimePin, 255);
-    else _writePin(_chimePin, 0);
+    if(_activeLow) _analogWritePin(_chimePin, 255);
+    else _analogWritePin(_chimePin, 0);
 }
 
-StatusPtr VDW_StatusChimeTarget::addStatus(StatusPtr status){
+ChimeStatusPtr VDW_StatusChimeTarget::addStatus(ChimeStatusPtr status){
     // Insert Elements sorted by priority, highest to lowest
-    StatusPtr nStatus = _headStatusList; // head is NULL if no elements in list
-    StatusPtr pStatus = NULL;
+    ChimeStatusPtr nStatus = _headStatusList; // head is NULL if no elements in list
+    ChimeStatusPtr pStatus = NULL;
     while(nStatus){
         if(nStatus->_priority <= status->_priority) break; // find the element where the priority is less than or equal to the new element
         pStatus = nStatus; // record the status that will be just before the status
@@ -28,20 +28,20 @@ StatusPtr VDW_StatusChimeTarget::addStatus(StatusPtr status){
     return nStatus; // will be NULL if first element or last element
 }
 
-StatusPtr VDW_StatusChimeTarget::pushBack(StatusPtr status){
+ChimeStatusPtr VDW_StatusChimeTarget::pushBack(ChimeStatusPtr status){
     // insert the incoming element to the beginning of the list
-    StatusPtr tempStatus = _headStatusList;
+    ChimeStatusPtr tempStatus = _headStatusList;
     _headStatusList = status;
 
     return tempStatus;
 }
 
-StatusPtr VDW_StatusChimeTarget::removeStatus(StatusPtr status){
+ChimeStatusPtr VDW_StatusChimeTarget::removeStatus(ChimeStatusPtr status){
     Serial.println("Before Removal");
     printStatuses();
     // find the elements just before and after the incoming element
-    StatusPtr nStatus = _headStatusList;
-    StatusPtr pStatus = NULL;
+    ChimeStatusPtr nStatus = _headStatusList;
+    ChimeStatusPtr pStatus = NULL;
     while(nStatus){
         if(nStatus == status){
             nStatus = nStatus->_nextStatus;
@@ -63,10 +63,10 @@ StatusPtr VDW_StatusChimeTarget::removeStatus(StatusPtr status){
 // display highest priority active status, run blink patterns and count number of blinks, reset active status if number of blinks exceeds set number
 void VDW_StatusChimeTarget::update(){
 
-    StatusPtr aStatus = NULL; // the "active" status
+    ChimeStatusPtr aStatus = NULL; // the "active" status
 
     // find the highest priority, active status. list is sorted by priority ==> first active element is highest priority, active element
-    StatusPtr cStatus = _headStatusList;
+    ChimeStatusPtr cStatus = _headStatusList;
     while(cStatus != NULL){
         if(cStatus->_active){
             aStatus = cStatus;
@@ -77,8 +77,8 @@ void VDW_StatusChimeTarget::update(){
 
     // if all statuses inactive, turn LED off and exit update();
     if(aStatus == NULL){
-        if(_activeLow) _writePin(_chimePin, 255);
-        else _writePin(_chimePin, 0);
+        if(_activeLow) _analogWritePin(_chimePin, 255);
+        else _analogWritePin(_chimePin, 0);
         return;
     }
 
@@ -91,10 +91,10 @@ void VDW_StatusChimeTarget::update(){
         uint8_t pwm = _volume;
         if(_activeLow) pwm = 255-_volume; // if active low, invert _volume
 
-        _writePin(_chimePin, pwm);
+        _analogWritePin(_chimePin, pwm);
     } else {
-        if(_activeLow) _writePin(_chimePin, 255);
-        else _writePin(_chimePin, 0);
+        if(_activeLow) _analogWritePin(_chimePin, 255);
+        else _analogWritePin(_chimePin, 0);
     }
 
     // exit update() if solid color
@@ -121,7 +121,7 @@ void VDW_StatusChimeTarget::update(){
 
 void VDW_StatusChimeTarget::printStatuses(){
     Serial.printlnf("----------");
-    StatusPtr status = _headStatusList;
+    ChimeStatusPtr status = _headStatusList;
     while(status){
         status->printStatus();
         status = status->_nextStatus;

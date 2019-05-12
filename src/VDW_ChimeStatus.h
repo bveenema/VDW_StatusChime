@@ -21,10 +21,13 @@ enum StatusChime_Speed {
     StatusChime_Speed_Slow = 750,
 };
 
+#ifndef DISABLED_ACTIVE_ENUM
+#define DISABLED_ACTIVE_ENUM
 enum {
     Disabled,
     Active,
 };
+#endif
 
 // forward declare the target LED for reference
 class VDW_StatusChimeTarget;
@@ -80,8 +83,8 @@ class VDW_ChimeStatus{
         uint32_t _blinksCompleted; // the number of times the status has blinked since setStatus() was called
         bool _active = false; // active status means the color and blink rate will be displayed if it's highest priority
 
-        typedef VDW_ChimeStatus* StatusPtr;
-        StatusPtr _nextStatus;
+        typedef VDW_ChimeStatus* ChimeStatusPtr;
+        ChimeStatusPtr _nextStatus;
 };
 
 #endif

@@ -1,28 +1,28 @@
-#ifndef STATUS_LED_TARGET_H
-#define STATUS_LED_TARGET_H
+#ifndef STATUS_CHIME_TARGET_H
+#define STATUS_CHIME_TARGET_H
 
 #include "Particle.h"
 
 class VDW_ChimeStatus;
-typedef VDW_ChimeStatus* StatusPtr;
+typedef VDW_ChimeStatus* ChimeStatusPtr;
 
-inline void digitalWriteParamConverter(uint8_t pin , bool dir){
-    digitalWrite(pin, dir);
+inline void analogWriteParamConverter(uint8_t pin , uint8_t pwm){
+    analogWrite(pin, pwm);
 }
 
 class VDW_StatusChimeTarget{
         public:
         // Native Pin constructor
         VDW_StatusChimeTarget(uint8_t chimePin, bool activeLow = false)
-            :   _writePin(digitalWriteParamConverter)
+            :   _analogWritePin(analogWriteParamConverter)
             ,   _chimePin(chimePin)
             ,   _activeLow(activeLow)
             ,   _externalIO(false)
             {}
 
         // External IO pin constructor
-        VDW_StatusChimeTarget(void (*writePin)(uint8_t, bool), uint8_t chimePin, bool activeLow = false)
-            :   _writePin(writePin)
+        VDW_StatusChimeTarget(void (*writePin)(uint8_t, uint8_t), uint8_t chimePin, bool activeLow = false)
+            :   _analogWritePin(writePin)
             ,   _chimePin(chimePin)
             ,   _activeLow(activeLow)
             ,   _externalIO(true)
@@ -31,9 +31,9 @@ class VDW_StatusChimeTarget{
         // make sure all pins are off, pin modes should be setup prior to calling init
         void init();
         
-        StatusPtr addStatus(StatusPtr status);
-        StatusPtr pushBack(StatusPtr status);
-        StatusPtr removeStatus(StatusPtr status);
+        ChimeStatusPtr addStatus(ChimeStatusPtr status);
+        ChimeStatusPtr pushBack(ChimeStatusPtr status);
+        ChimeStatusPtr removeStatus(ChimeStatusPtr status);
 
         // display highest priority active status, run blink patterns and count number of blinks, reset active status if number of blinks exceeds set number
         void update();
@@ -45,15 +45,15 @@ class VDW_StatusChimeTarget{
 
     private:  
         // Constructor Settings
-        void (*_writePin)(uint8_t, bool);
+        void (*_analogWritePin)(uint8_t, uint8_t);
         uint8_t _chimePin;
         bool _activeLow;
         bool _externalIO;
         uint32_t _volume = 255;
         
         // Status List
-        StatusPtr _headStatusList = NULL;
-        StatusPtr _lastActiveStatus = NULL;        
+        ChimeStatusPtr _headStatusList = NULL;
+        ChimeStatusPtr _lastActiveStatus = NULL;        
 
         // Blink Control
         bool _blinkState = true; // true if LED is on during blink
