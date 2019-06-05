@@ -82,12 +82,12 @@ void VDW_StatusChimeTarget::update(){
         return;
     }
 
-    // if a new status is active, reset _blinkState
-    if(aStatus != _lastActiveStatus) _blinkState = false;
+    // if a new status is active, reset _pulseState
+    if(aStatus != _lastActiveStatus) _pulseState = false;
     _lastActiveStatus = aStatus;
 
     // if solid color (pulseRate == 0) or blink state is ON turn the LED to the specific color
-    if(aStatus->_pulseRate == 0 || _blinkState == true){
+    if(aStatus->_pulseRate == 0 || _pulseState == true){
         uint8_t pwm = _volume;
         if(_activeLow) pwm = 255-_volume; // if active low, invert _volume
 
@@ -100,18 +100,21 @@ void VDW_StatusChimeTarget::update(){
     // exit update() if solid color
     if(aStatus->_pulseRate == 0) return;
 
-    // determine if a blink state change is due
-    if(millis() - _lastBlinkTransition > aStatus->_pulseRate){
-        _lastBlinkTransition = millis();
-        _blinkState = !_blinkState;
+    // determine if a pulse state change is due
+    if(_pulseState && millis() - _pulseOnTime > aStatus->_pulseLength){ // if pulse should end
+        _pulseState = false;
+    }else if(!_pulseState && millis() - _pulsePeriodTime > aStatus->_pulseRate){ // if pulse should start
+        _pulsePeriodTime = millis();
+        _pulseOnTime = millis();
+        _pulseState = true;
     }
 
     // exit update() if blink should go on forever
     if(aStatus->_numBlinks == 0) return;
 
     // increment blinksCompleted when blink cycle is completed, detected by falling edge of blink
-    if((_blinkState != _previousBlinkState) && (_previousBlinkState == 1)) aStatus->_blinksCompleted += 1;
-    _previousBlinkState = _blinkState;
+    if((_pulseState != _previousBlinkState) && (_previousBlinkState == 1)) aStatus->_blinksCompleted += 1;
+    _previousBlinkState = _pulseState;
 
     // if status has blinked numBlinks (and numBlinks was set), set the status inactive
     if(aStatus->_blinksCompleted >= aStatus->_numBlinks) aStatus->_active = false;

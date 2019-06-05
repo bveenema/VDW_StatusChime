@@ -56,8 +56,10 @@ class VDW_StatusChimeTarget{
         ChimeStatusPtr _lastActiveStatus = NULL;        
 
         // Blink Control
-        bool _blinkState = true; // true if LED is on during blink
+        bool _pulseState = true; // true if LED is on during blink
         bool _previousBlinkState = false; // blink state for previous update() call, used to determine, rising edges for incrementing blink counts
+        uint32_t _pulseOnTime = 0; // The time the current pulse came on
+        uint32_t _pulsePeriodTime = 0; // The time the last pulse period began
         uint32_t _lastBlinkTransition = 0; // time in milliseconds of the last blink state change
 
         void printStatuses();

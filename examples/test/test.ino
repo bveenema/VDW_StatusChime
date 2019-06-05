@@ -7,10 +7,11 @@
 #include "pins.h"
 
 VDW_StatusChimeTarget Chime(CHIME_VOLUME_PIN);
-VDW_ChimeStatus ChimePulseSlow(&Chime, StatusChime_Pattern_Pulse, StatusChime_Speed_Slow);
-VDW_ChimeStatus ChimePulseMed(&Chime, StatusChime_Pattern_Pulse, StatusChime_Speed_Medium);
-VDW_ChimeStatus ChimePulseFast(&Chime, StatusChime_Pattern_Pulse, StatusChime_Speed_Fast);
-VDW_ChimeStatus ChimeContinous(&Chime, StatusChime_Pattern_Solid);
+VDW_ChimeStatus ChimePulseDuty(&Chime, StatusChime_Priority_Med, StatusChime_Pattern_Pulse, 2000, 350);
+VDW_ChimeStatus ChimePulseSlow(&Chime, StatusChime_Priority_Med, StatusChime_Pattern_Pulse, StatusChime_Speed_Slow);
+VDW_ChimeStatus ChimePulseMed(&Chime, StatusChime_Priority_Med, StatusChime_Pattern_Pulse, StatusChime_Speed_Medium);
+VDW_ChimeStatus ChimePulseFast(&Chime, StatusChime_Priority_Med, StatusChime_Pattern_Pulse, StatusChime_Speed_Fast);
+VDW_ChimeStatus ChimeContinous(&Chime, StatusChime_Priority_Med, StatusChime_Pattern_Solid);
 
 void setup() {
   // Initialize Serial
@@ -23,9 +24,10 @@ void setup() {
 
 void loop() {
   static uint32_t lastUpdate = 0;
-  if(millis() - lastUpdate > 5000){
+  if(millis() - lastUpdate > 10000){
     lastUpdate = millis();
     static uint32_t status = 0;
+    ChimePulseDuty.setStatus(Disabled);
     ChimePulseSlow.setStatus(Disabled);
     ChimePulseMed.setStatus(Disabled);
     ChimePulseFast.setStatus(Disabled);
@@ -33,20 +35,23 @@ void loop() {
     Serial.printlnf("Status: %d", status);
     switch(status){
       case 0:
-        ChimePulseSlow.setStatus(Active);
+        ChimePulseDuty.setStatus(Active);
         status = 1;
-        break;
       case 1:
-        ChimePulseMed.setStatus(Active);
+        ChimePulseSlow.setStatus(Active);
         status = 2;
         break;
       case 2:
-        ChimePulseFast.setStatus(Active);
+        ChimePulseMed.setStatus(Active);
         status = 3;
         break;
       case 3:
+        ChimePulseFast.setStatus(Active);
+        status = 4;
+        break;
+      case 4:
         ChimeContinous.setStatus(Active);
-        status = 3;
+        status = 5;
         break;
       default:
         break;

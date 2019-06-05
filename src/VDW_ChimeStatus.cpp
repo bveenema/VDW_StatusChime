@@ -2,31 +2,21 @@
 #include "VDW_StatusChimeTarget.h"
 
 
-
-VDW_ChimeStatus::VDW_ChimeStatus(VDW_StatusChimeTarget *TargetChime){
-    construct(TargetChime, StatusChime_Priority_Low, StatusChime_Pattern_Solid, 0, 0);
-}
-VDW_ChimeStatus::VDW_ChimeStatus(VDW_StatusChimeTarget *TargetChime, StatusChime_Pattern pattern, StatusChime_Speed speed, uint32_t numBlinks){
-    construct(TargetChime, StatusChime_Priority_Low, pattern, speed, numBlinks);
-}
-VDW_ChimeStatus::VDW_ChimeStatus(VDW_StatusChimeTarget *TargetChime, StatusChime_Pattern pattern, uint32_t pulseRate, uint32_t numBlinks){
-    construct(TargetChime, StatusChime_Priority_Low, pattern, pulseRate, numBlinks);
-}
-VDW_ChimeStatus::VDW_ChimeStatus(VDW_StatusChimeTarget *TargetChime, StatusChime_Priority priority){
-    construct(TargetChime, priority, StatusChime_Pattern_Solid, 0, 0);
-}
 VDW_ChimeStatus::VDW_ChimeStatus(VDW_StatusChimeTarget *TargetChime, StatusChime_Priority priority, StatusChime_Pattern pattern, StatusChime_Speed speed, uint32_t numBlinks){
-    construct(TargetChime, priority, pattern, speed, numBlinks);
+    construct(TargetChime, priority, pattern, speed, speed/2, numBlinks);
 }
-VDW_ChimeStatus::VDW_ChimeStatus(VDW_StatusChimeTarget *TargetChime, StatusChime_Priority priority, StatusChime_Pattern pattern, uint32_t pulseRate, uint32_t numBlinks){
-    construct(TargetChime, priority, pattern, pulseRate, numBlinks);
+VDW_ChimeStatus::VDW_ChimeStatus(VDW_StatusChimeTarget *TargetChime, StatusChime_Priority priority, StatusChime_Pattern pattern, uint32_t pulseRate, uint32_t pulseLength, uint32_t numBlinks){
+    construct(TargetChime, priority, pattern, pulseRate, pulseLength, numBlinks);
 }
 
-void VDW_ChimeStatus::construct(VDW_StatusChimeTarget *TargetChime, StatusChime_Priority priority, StatusChime_Pattern pattern, uint32_t pulseRate, uint32_t numBlinks){
+void VDW_ChimeStatus::construct(VDW_StatusChimeTarget *TargetChime, StatusChime_Priority priority, StatusChime_Pattern pattern, uint32_t pulseRate, uint32_t pulseLength, uint32_t numBlinks){
     _TargetChime = TargetChime;
     _priority = priority;
     _pattern = pattern;
-    if(_pattern != StatusChime_Pattern_Solid) _pulseRate = pulseRate;
+    if(_pattern != StatusChime_Pattern_Solid){
+        _pulseRate = pulseRate;
+        _pulseLength = pulseLength;
+    }
     else _pulseRate = 0;
     _numBlinks = numBlinks;
 
