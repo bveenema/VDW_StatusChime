@@ -53,19 +53,16 @@ class VDW_ChimeStatus{
             _priority = priority;
         }
 
+        // Update Pulse Rate
+        // Sets a new pulse rate for a Pattern_Pulse status
+        // \param[uint32_t] pulseRate - the new pulse rate for the status
+        void UpdatePulseRate(uint32_t pulseRate){
+            _pulseRate = pulseRate;
+        }
+
         // makes the status the highest priority in the list and sets it active, then calls update to display the status immediately
         //  WARNING: should not be used except for absolutely critical statuses that will be active for short durations or just before a crash, reset or power-down would occur
         bool displayNow();
-
-        void printStatus(){
-            Serial.printlnf("Status %d", this);
-            Serial.printlnf("\tActive: %d", _active);
-            Serial.printlnf("\tBlink Rate: %d", _pulseRate);
-            Serial.printlnf("\tNum Blinks: %d", _numBlinks);
-            Serial.printlnf("\tBlinks Completed: %d", _blinksCompleted);
-            Serial.printlnf("\tPriority: %d", _priority);
-            Serial.printlnf("\tNext Status: %d", _nextStatus);
-        }
 
     private:
 

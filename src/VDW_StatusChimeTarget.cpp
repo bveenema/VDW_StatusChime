@@ -122,15 +122,6 @@ void VDW_StatusChimeTarget::update(){
     return;
 }
 
-void VDW_StatusChimeTarget::printStatuses(){
-    Serial.printlnf("----------");
-    ChimeStatusPtr status = _headStatusList;
-    while(status){
-        status->printStatus();
-        status = status->_nextStatus;
-    }
-}
-
 void VDW_StatusChimeTarget::setVolume(uint32_t volume){
     if(volume > 255) volume = 255;
     _volume = volume;
