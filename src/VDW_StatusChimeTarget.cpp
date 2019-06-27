@@ -75,7 +75,7 @@ void VDW_StatusChimeTarget::update(){
         cStatus = cStatus->_nextStatus;
     }
 
-    // if all statuses inactive, turn LED off and exit update();
+    // if all statuses inactive, turn Chime off and exit update();
     if(aStatus == NULL){
         if(_activeLow) _analogWritePin(_chimePin, 255);
         else _analogWritePin(_chimePin, 0);
@@ -86,7 +86,7 @@ void VDW_StatusChimeTarget::update(){
     if(aStatus != _lastActiveStatus) _pulseState = false;
     _lastActiveStatus = aStatus;
 
-    // if solid color (pulseRate == 0) or blink state is ON turn the LED to the specific color
+    // if constant chime (pulseRate == 0) or chime state is ON, turn on the Chime
     if(aStatus->_pulseRate == 0 || _pulseState == true){
         uint8_t pwm = _volume;
         if(_activeLow) pwm = 255-_volume; // if active low, invert _volume
@@ -97,7 +97,7 @@ void VDW_StatusChimeTarget::update(){
         else _analogWritePin(_chimePin, 0);
     }
 
-    // exit update() if solid color
+    // exit update() if constant shime
     if(aStatus->_pulseRate == 0) return;
 
     // determine if a pulse state change is due
@@ -109,7 +109,7 @@ void VDW_StatusChimeTarget::update(){
         _pulseState = true;
     }
 
-    // exit update() if blink should go on forever
+    // exit update() if chime should go on forever
     if(aStatus->_numBlinks == 0) return;
 
     // increment blinksCompleted when blink cycle is completed, detected by falling edge of blink
